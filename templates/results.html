@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Results{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">Record Result</div>
+      <div class="card-body">
+        <form method="post">
+          {{ form.hidden_tag() }}
+          <div class="mb-2">{{ form.order_id.label(class_='form-label') }}{{ form.order_id(class_='form-select') }}</div>
+          <div class="mb-2">{{ form.value.label(class_='form-label') }}{{ form.value(class_='form-control') }}</div>
+          <div class="mb-2">{{ form.unit.label(class_='form-label') }}{{ form.unit(class_='form-control') }}</div>
+          <div class="mb-2">{{ form.qual.label(class_='form-label') }}{{ form.qual(class_='form-control') }}</div>
+          {{ form.submit(class_='btn btn-primary w-100') }}
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">Results</div>
+      <div class="card-body">
+        <table class="table table-striped">
+          <thead><tr><th>Order</th><th>Value</th><th>Qual</th><th>Judged</th><th>Reported</th></tr></thead>
+          <tbody>
+            {% for result in results %}
+            <tr>
+              <td>{{ result.order_id }}</td>
+              <td>{{ result.value }} {{ result.unit }}</td>
+              <td>{{ result.qual }}</td>
+              <td>{{ result.judged }}</td>
+              <td>{{ result.reported_at }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center">No results</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
