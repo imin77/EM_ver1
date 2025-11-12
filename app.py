@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import os
 from datetime import datetime, date
 from io import StringIO
 from pathlib import Path
@@ -52,7 +53,8 @@ BASE_DIR = Path(__file__).resolve().parent
 
 def create_app() -> Flask:
     app = Flask(__name__, instance_relative_config=True)
-    app.config.setdefault("SECRET_KEY", "dev")
+    if not app.config.get("SECRET_KEY"):
+        app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev")
     app.config.setdefault("SQLALCHEMY_DATABASE_URI", "sqlite:///" + str(BASE_DIR / "instance" / "em.db"))
     app.config.setdefault("SQLALCHEMY_TRACK_MODIFICATIONS", False)
 
