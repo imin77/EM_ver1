@@ -108,11 +108,6 @@ def create_app() -> Flask:
             db.session.commit()
         return created
 
-    @app.before_first_request
-    def ensure_seed_data():
-        db.create_all()
-        seed_defaults()
-
     @app.route("/init")
     def init_app():
         db.create_all()
@@ -157,6 +152,10 @@ def create_app() -> Flask:
             return login_required(wrapper)
 
         return decorator
+
+    with app.app_context():
+        db.create_all()
+        seed_defaults()
 
     @app.route("/")
     @login_required
