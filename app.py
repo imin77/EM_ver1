@@ -74,12 +74,17 @@ def create_app() -> Flask:
     def inject_now():
         return {"now": datetime.utcnow()}
 
-    @app.route("/init")
-    def init_app():
-        db.create_all()
+    def seed_defaults() -> bool:
+        """Ensure critical seed data exists. Returns True if anything was created."""
+        created = False
         if not User.query.filter_by(email="admin@example.com").first():
-            user = User(email="admin@example.com", pw_hash=generate_password_hash("admin"), role="Admin")
+            user = User(
+                email="admin@example.com",
+                pw_hash=generate_password_hash("admin"),
+                role="Admin",
+            )
             db.session.add(user)
+            created = True
         if not Site.query.first():
             site = Site(name="Seoul Plant")
             db.session.add(site)
@@ -88,6 +93,7 @@ def create_app() -> Flask:
             db.session.add(zone)
             point = Point(zone_id=zone.id, code="PKG-01", name="Conveyor Belt", type="Surface")
             db.session.add(point)
+            created = True
         if not Method.query.first():
             method = Method(
                 code="TBC",
@@ -97,8 +103,27 @@ def create_app() -> Flask:
                 max_val=10,
             )
             db.session.add(method)
-        db.session.commit()
-        flash("Database initialized with default admin (admin@example.com / admin)", "success")
+            created = True
+        if created:
+            db.session.commit()
+        return created
+
+    @app.before_first_request
+    def ensure_seed_data():
+        db.create_all()
+        seed_defaults()
+
+    @app.route("/init")
+    def init_app():
+        db.create_all()
+        created = seed_defaults()
+        if created:
+            flash(
+                "Database initialized with default admin (admin@example.com / admin)",
+                "success",
+            )
+        else:
+            flash("Database already initialized", "info")
         return redirect(url_for("login"))
 
     @app.route("/login", methods=["GET", "POST"])
