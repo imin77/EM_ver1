@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Plans{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-4">
+    <div class="card mb-3">
+      <div class="card-header">Create Plan</div>
+      <div class="card-body">
+        <form method="post">
+          {{ form.hidden_tag() }}
+          <div class="mb-2">{{ form.site_id.label(class_='form-label') }}{{ form.site_id(class_='form-select') }}</div>
+          <div class="mb-2">{{ form.name.label(class_='form-label') }}{{ form.name(class_='form-control') }}</div>
+          <div class="mb-2">{{ form.frequency.label(class_='form-label') }}{{ form.frequency(class_='form-select') }}</div>
+          {{ form.submit(class_='btn btn-primary') }}
+        </form>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">Generate Schedules</div>
+      <div class="card-body">
+        <form method="post" action="{{ url_for('generate_schedules') }}">
+          {{ schedule_form.hidden_tag() }}
+          <div class="mb-2">{{ schedule_form.plan_id.label(class_='form-label') }}{{ schedule_form.plan_id(class_='form-select') }}</div>
+          <div class="mb-2">{{ schedule_form.start_date.label(class_='form-label') }}{{ schedule_form.start_date(class_='form-control') }}</div>
+          <div class="mb-2">{{ schedule_form.periods.label(class_='form-label') }}{{ schedule_form.periods(class_='form-select') }}</div>
+          {{ schedule_form.submit(class_='btn btn-secondary') }}
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">Plans</div>
+      <div class="card-body">
+        <table class="table table-striped">
+          <thead><tr><th>Name</th><th>Site</th><th>Frequency</th><th>Schedules</th></tr></thead>
+          <tbody>
+            {% for plan in plans %}
+            <tr>
+              <td>{{ plan.name }}</td>
+              <td>{{ plan.site.name }}</td>
+              <td>{{ plan.frequency }}</td>
+              <td>{{ plan.schedules|length }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="text-center">No plans</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
