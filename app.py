@@ -88,10 +88,9 @@ def create_app() -> Flask:
         if not Site.query.first():
             site = Site(name="Seoul Plant")
             db.session.add(site)
-            db.session.flush()
-            zone = Zone(site_id=site.id, name="Packaging", risk_level="High")
+            zone = Zone(site=site, name="Packaging", risk_level="High")
             db.session.add(zone)
-            point = Point(zone_id=zone.id, code="PKG-01", name="Conveyor Belt", type="Surface")
+            point = Point(zone=zone, code="PKG-01", name="Conveyor Belt", type="Surface")
             db.session.add(point)
             created = True
         if not Method.query.first():
